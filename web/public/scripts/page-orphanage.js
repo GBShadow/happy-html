@@ -4,7 +4,7 @@ const options = {
   doubleClickZoom: false,
   scrollWheelZoom: false,
   zoomControl: false
-}
+};
 
 const map = L.map("mapid", options).setView([-23.6810527, -46.7629219], 15);
 
@@ -14,27 +14,7 @@ const icon = L.icon({
   iconUrl: "./public/images/map-marker.svg",
   iconSize: [58, 68],
   iconAnchor: [29, 68],
-  popupAnchor: [170, 2],
+  popupAnchor: [170, 2]
 });
 
-L.marker([-23.6810527, -46.7629219], { icon })
-  .addTo(map)
-
-function selectImage(event) {
-  const button = event.currentTarget
-
-  const buttons = document.querySelectorAll(".images button")
-
-  buttons.forEach(removeActiveClass)
-
-  const image = button.children[0]
-  const imageContainer = document.querySelector(".orphanage-details > img")
-
-  imageContainer.src = image.src
-
-  function removeActiveClass(button) {
-    button.classList.remove("active")
-  }
-
-  button.classList.add("active")
-}
+L.marker([-23.6810527, -46.7629219], { icon }).addTo(map);
