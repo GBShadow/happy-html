@@ -11,11 +11,19 @@ module.exports = {
 
     try {
       const db = await Database;
-      const orphanage = await db.all(
-        `SELECT * FROM orphanages WHERE id = ${id}`
-      );
+      const results = await db.all(`SELECT * FROM orphanages WHERE id = ${id}`);
+      const orphanage = results[0];
 
-      return res.render("orphanage", { orphanage: orphanage[0] });
+      orphanage.images = orphanage.images.split(",");
+      orphanage.firstImage = orphanage.images[0];
+
+      if (orphanage.open_on_weekends == "0") {
+        orphanage.open_on_weekends = false;
+      } else {
+        orphanage.open_on_weekends = true;
+      }
+
+      return res.render("orphanage", { orphanage });
     } catch (error) {
       console.log(error);
       return res.send("Erro no banco de dados!");
@@ -36,5 +44,45 @@ module.exports = {
 
   createOrphanage(req, res) {
     return res.render("create-orphanage");
+  },
+
+  async saveOrphanage(req, res) {
+    const fields = req.body;
+    const fieldsIsValid = Object.values(fields).includes("");
+    const {
+      lat,
+      lng,
+      name,
+      whatsapp,
+      images,
+      description,
+      instructions,
+      opening_hours,
+      open_on_weekends
+    } = fields;
+
+    if (fieldsIsValid) {
+      return res.send("Todos os campos devem der preenchidos!");
+    }
+
+    try {
+      const db = await Database;
+      await saveOrphanage(db, {
+        lat,
+        lng,
+        name,
+        whatsapp,
+        description,
+        images: images.toString(),
+        instructions,
+        opening_hours,
+        open_on_weekends
+      });
+
+      return res.redirect("/orphanages");
+    } catch (error) {
+      console.log(error);
+      return res.send("Erro no banco de dados");
+    }
   }
 };
